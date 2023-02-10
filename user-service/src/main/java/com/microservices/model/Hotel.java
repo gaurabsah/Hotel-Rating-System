@@ -9,18 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Rating {
-
-	private String ratingId;
-
-	private int userId;
+public class Hotel {
 
 	private int hotelId;
 
-	private int rating;
+	private String name;
 
-	private String feedback;
+	private String location;
 
-	private Hotel hotel;
-
+	private String about;
 }
