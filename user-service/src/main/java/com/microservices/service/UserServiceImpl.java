@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +15,8 @@ import com.microservices.model.Hotel;
 import com.microservices.model.Rating;
 import com.microservices.model.User;
 import com.microservices.repository.UserRepository;
+import com.microservices.util.HotelService;
+import com.microservices.util.RatingService;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,6 +28,12 @@ public class UserServiceImpl implements UserService {
 	private RestTemplate restTemplate;
 
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+	@Autowired
+	private HotelService hotelService;
+
+	@Autowired
+	private RatingService ratingService;
 
 	@Override
 	public User addUser(User user) {
@@ -45,13 +52,15 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User not found!!!"));
 //		call api from rating service using Rest template
-		List<Rating> list = Arrays.asList(restTemplate
-				.getForObject("http://RATING-SERVICE/api/v1/rating/user/" + user.getUserId(), Rating[].class));
+//		List<Rating> list = Arrays.asList(restTemplate
+//				.getForObject("http://RATING-SERVICE/api/v1/rating/user/" + user.getUserId(), Rating[].class));
+		List<Rating> ratingByUser = ratingService.getAllRatingsByUser(user.getUserId());
 		logger.info("Ratings Fetched using User");
-		List<Rating> ratingList = list.stream().map(rating -> {
+		List<Rating> ratingList = ratingByUser.stream().map(rating -> {
 //			api call for hotel
-			Hotel hotel = restTemplate.getForObject("http://HOTEL-SERVICE/api/v1/hotel/" + rating.getHotelId(),
-					Hotel.class);
+//			Hotel hotel = restTemplate.getForObject("http://HOTEL-SERVICE/api/v1/hotel/" + rating.getHotelId(),
+//					Hotel.class);
+			Hotel hotel = hotelService.getHotel(rating.getHotelId());
 
 //			set hotel to rating
 			rating.setHotel(hotel);
