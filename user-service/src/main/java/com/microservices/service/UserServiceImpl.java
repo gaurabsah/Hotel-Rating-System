@@ -46,11 +46,11 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> new ResourceNotFoundException("User not found!!!"));
 //		call api from rating service using Rest template
 		List<Rating> list = Arrays.asList(restTemplate
-				.getForObject("http://localhost:8083/api/v1/rating/user/" + user.getUserId(), Rating[].class));
+				.getForObject("http://RATING-SERVICE/api/v1/rating/user/" + user.getUserId(), Rating[].class));
 		logger.info("Ratings Fetched using User");
 		List<Rating> ratingList = list.stream().map(rating -> {
 //			api call for hotel
-			Hotel hotel = restTemplate.getForObject("http://localhost:8082/api/v1/hotel/" + rating.getHotelId(),
+			Hotel hotel = restTemplate.getForObject("http://HOTEL-SERVICE/api/v1/hotel/" + rating.getHotelId(),
 					Hotel.class);
 
 //			set hotel to rating
